@@ -25,6 +25,9 @@ var (
 	flagInput    = flag.String("i", "", "afl-fuzz -i option (input location)")
 	flagExtras   = flag.String("x", "", "afl-fuzz -x option (extras location)")
 	flagOutput   = flag.String("o", "", "afl-fuzz -o option (output location)")
+	flagPower    = flag.String("p", "", "afl-fuzz -p option (afl++ Power schedule)")
+	flagMopt     = flag.String("L", "", "afl-fuzz -L option (afl++ -L M0pt Mutation)")
+	flagQemu     = flag.String("Q", "", "afl-fuzz -L option (afl++ -Q Qemu Mode)")
 	flagFile     = flag.String("f", "", "Filename template (substituted and passed via -f)")
 	flagXXX      = flag.Bool("XXX", false, "[HACK] substitute XXX in the target args with an 8 char random string [HACK]")
 
@@ -82,6 +85,11 @@ func spawn(fuzzerName string, args []string) {
 	}
 
 	cmd := exec.Command(AFLNAME, args...)
+
+	cmd.Env = os.Environ()
+	cmd.Env = append(cmd.Env, "AFL_AUTORESUME=1")
+	cmd.Env = append(cmd.Env, "AFL_DEBUG_CHILD_OUTPUT=1")
+
 	cmd.Stdout = fd
 	err = cmd.Start()
 	if err != nil {
@@ -118,7 +126,7 @@ func main() {
 
 	// collect the proxy args for afl-fuzz
 	baseArgs := []string{}
-	for _, v := range []string{"t", "m", "i", "x", "o"} {
+	for _, v := range []string{"t", "m", "i", "x", "o", "p", "L", "Q"} {
 		f := flag.Lookup(v)
 		if f != nil && f.Value.String() != f.DefValue {
 			baseArgs = append(baseArgs, "-"+v, f.Value.String())

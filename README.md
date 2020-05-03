@@ -7,6 +7,10 @@ afl-launch
 command line. It provides no compelling features; it is simply my version of
 this tool.
 
+All credits to @bnaggy for the tool. Made some modifications to support AFL++
+
+Sets the env. variables AFL_AUTORESUME=1 and AFL_DEBUG_CHILD_OUTPUT=1 by default. Remove if not required.
+
 ```
 Usage of afl-launch:
   -XXX
@@ -29,6 +33,11 @@ Usage of afl-launch:
         afl-fuzz -t option (timeout)
   -x string
         afl-fuzz -x option (extras location)
+  -L string
+        afl-fuzz++ -L option (for M0pt Mutation)
+  -p string
+        afl-fuzz++ -p option (for Power schedule, refer AFL++ Docs)
+
 ```
 
 The launcher DOES NOT CHECK if the `afl-fuzz` instance errored out. Before
@@ -40,6 +49,12 @@ If you don't supply a base name, the launcher will pick a random one.
 Example:
 ```
 ./afl-launch -i ~/testcases/pdf -o ~/fuzzing/pdf -n 4  -- pdftoppm @@
+```
+
+Launches AFL++ in Power schedule fast mode and M0pt mutator mode.
+
+```
+./afl-launch -L 0 -p fast -i ~/testcases/pdf -o ~/fuzzing/pdf -n 4  -- pdftoppm @@
 ```
 
 A note on the `-f` flag - the idea is that you pass a template like
